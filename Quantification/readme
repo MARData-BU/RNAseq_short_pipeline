@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Julia 8.2.2020
+# Quantification with Featurecounts of project:
+
+PROJECT=20190826_AGimenez_FIS_UFred
+
+# Prepare variables
+#------------------
+
+path=/bicoh/MARGenomics
+DIR=${path}/${PROJECT}
+
+# Prepare folders
+#------------------
+
+mkdir $DIR/Quantification
+mkdir $DIR/Quantification/logs
+
+
+#====================#
+#   FeatureCouns     #
+#====================#
+cd $DIR/Quantification
+
+mkdir $DIR/Quantification/CountFiles
+
+
+BAMDIR=$DIR/ReadMapping/STAR_BAM_Merged
+OUTDIR=$DIR/Quantification/CountFiles
+
+sbatch $DIR/Quantification/feature.counts.sh $BAMDIR $OUTDIR
+

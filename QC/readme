@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# QC Analysis of RNASeq samples of project: 
+
+PROJECT=20190826_AGimenez_FIS_UFred
+
+# Prepare variables
+#------------------
+
+path=/bicoh/MARGenomics
+DIR=${path}/${PROJECT}
+FASTQDIR=${DIR}/rawData
+
+# Prepare folders
+#------------------
+mkdir $DIR/QC
+mkdir $DIR/QC/logs
+
+#============#
+#   FASTQC   #
+#============#
+mkdir $DIR/QC/FastQC
+
+for i in $(ls $FASTQDIR/*/*fastq.gz) 
+	do
+	echo $i
+	outdir=$DIR/QC/FastQC
+	sbatch $DIR/QC/fastqc.sh $i $outdir
+	sleep 1
+done
+
+
+#=================#
+#   FASTQSCREEN   #
+#=================#
+mkdir $DIR/QC/FastqScreen
+
+for i in $(ls $FASTQDIR/*/*fastq.gz) 
+	do
+	echo $i
+	outdir=$DIR/QC/FastqScreen
+	sbatch $DIR/QC/fastq_screen.sh $i $outdir
+	sleep 1
+done
+
+#=================#
+#   MultiQC       #
+#=================#
+mkdir $DIR/QC/multiQC
+
+cd $DIR/QC
+module load Python/3.5.2-foss-2016b
+
+multiqc . -f -o $DIR/QC/multiQC
+
