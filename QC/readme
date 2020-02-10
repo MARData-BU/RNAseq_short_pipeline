@@ -13,7 +13,6 @@ FASTQDIR=${DIR}/rawData
 
 # Prepare folders
 #------------------
-mkdir $DIR/QC
 mkdir $DIR/QC/logs
 
 #============#

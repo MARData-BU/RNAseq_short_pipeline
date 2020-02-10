@@ -13,8 +13,6 @@ DIR=${path}/${PROJECT}
 
 # Prepare folders
 #------------------
-
-mkdir $DIR/Quantification
 mkdir $DIR/Quantification/logs
 
 

@@ -3,8 +3,8 @@
 # Julia 8.2.2020
 # BAM alignement of project:
 
-
 PROJECT=20190826_AGimenez_FIS_UFred
+
 # Prepare variables
 #------------------
 
@@ -13,7 +13,6 @@ DIR=${path}/${PROJECT}
 
 # Prepare folders
 #------------------
-mkdir $DIR/ReadMapping
 mkdir $DIR/ReadMapping/logs
 
 
