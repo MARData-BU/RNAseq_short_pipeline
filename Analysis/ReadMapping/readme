@@ -53,6 +53,19 @@ grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Unique
  grep "other" "$i" >> $OUTDIR/TotalCounts_Alignment; done
 
 
+#=================#
+#   MultiQC       #
+#=================#
+# Copy **Log.final.out to multiqc folder
+cp $DIR/Analysis/ReadMapping/BAM_Files/*Log.final.out $DIR/QC/multiQC/
+
+cd $DIR/QC
+module load Python/3.5.2-foss-2016b
+
+multiqc . -o $DIR/QC/multiQC -f
+
+
+
 #############################################################################################
 #################################TARGET MERGE BAM ##########################################
 ##################################################################################################

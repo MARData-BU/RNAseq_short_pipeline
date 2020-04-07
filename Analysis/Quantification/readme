@@ -29,3 +29,16 @@ OUTDIR=$DIR/Analysis/Quantification/CountFiles
 
 sbatch $DIR/Analysis/Quantification/feature.counts.sh $BAMDIR $OUTDIR
 
+#=================#
+#   MultiQC       #
+#=================#
+# Copy CountsTable.txt.summary to multiqc folder
+cp $DIR/Analysis/Quantification/CountFiles/CountsTable.txt.summary $DIR/QC/multiQC/
+
+cd $DIR/QC
+module load Python/3.5.2-foss-2016b
+
+multiqc . -o $DIR/QC/multiQC -f
+
+
+
