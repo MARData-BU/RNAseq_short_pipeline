@@ -13,29 +13,29 @@ DIR=${path}/${PROJECT}
 
 # Prepare folders
 #------------------
-mkdir $DIR/ReadMapping/logs
+mkdir $DIR/Analysis/ReadMapping/logs
 
 
 #############################################################################################
 #################################TARGET PREPARATION##########################################
 cd $DIR/rawData/results-run1
-ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u > $DIR/Targets_Fastq
+ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u > $DIR/Analysis/Targets_Fastq
 
 cd $DIR/rawData/results-run2
-ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u >> $DIR/Targets_Fastq
+ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u >> $DIR/Analysis/Targets_Fastq
 #############################################################################################
 #############################################################################################
 
 #============#
 #   STAR     #
 #============#
-mkdir $DIR/ReadMapping/BAM_Files
+mkdir $DIR/Analysis/ReadMapping/BAM_Files
 
-for i in $(cat $DIR/Targets_Fastq | grep -v "Undetermined") 
+for i in $(cat $DIR/Analysis/Targets_Fastq | grep -v "Undetermined") 
 	do
 	echo $i
-	OUTDIR=$DIR/ReadMapping/BAM_Files
-	sbatch $DIR/ReadMapping/STAR.alignment.sh $i $OUTDIR
+	OUTDIR=$DIR/Analysis/ReadMapping/BAM_Files
+	sbatch $DIR/Analysis/ReadMapping/STAR.alignment.sh $i $OUTDIR
 	sleep 1
 done
 
@@ -43,7 +43,7 @@ done
 #############################################################################################
 #Inspect alignment results
 
-OUTDIR=$DIR/ReadMapping/BAM_Files
+OUTDIR=$DIR/Analysis/ReadMapping/BAM_Files
 
 for i in $OUTDIR/*.final.out; do basename $i >> $OUTDIR/TotalCounts_Alignment; \
 grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Uniquely mapped reads" "$i"\
@@ -58,21 +58,21 @@ grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Unique
 ##################################################################################################
 
 # Targets file removing lane information (one row per sample)
-cd $DIR/ReadMapping/BAM_Files
-ls -d "$PWD"/*out.bam | sed 's/_L00.*Aligned.sortedByCoord.out.bam$//'  | sort -u > $DIR/ReadMapping/Targets_BamtoMerge_star
+cd $DIR/Analysis/ReadMapping/BAM_Files
+ls -d "$PWD"/*out.bam | sed 's/_L00.*Aligned.sortedByCoord.out.bam$//'  | sort -u > $DIR/Analysis/ReadMapping/Targets_BamtoMerge_star
 
 #=================#
 #   Merge BAMS    #
 #=================#
 
-cd $DIR/ReadMapping
-mkdir $DIR/ReadMapping/STAR_BAM_Merged
+cd $DIR/Analysis/ReadMapping
+mkdir $DIR/Analysis/ReadMapping/STAR_BAM_Merged
 
-for i in $(cat $DIR/ReadMapping/Targets_BamtoMerge_star) 
+for i in $(cat $DIR/Analysis/ReadMapping/Targets_BamtoMerge_star) 
 	do
 	echo $i
-	OUTDIR=$DIR/ReadMapping/STAR_BAM_Merged
-	sbatch $DIR/ReadMapping/Merge_BAM_Lanes.sh $i $OUTDIR
+	OUTDIR=$DIR/Analysis/ReadMapping/STAR_BAM_Merged
+	sbatch $DIR/Analysis/ReadMapping/Merge_BAM_Lanes.sh $i $OUTDIR
 	sleep 1
 done
 

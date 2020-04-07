@@ -13,19 +13,19 @@ DIR=${path}/${PROJECT}
 
 # Prepare folders
 #------------------
-mkdir $DIR/Quantification/logs
+mkdir $DIR/Analysis/Quantification/logs
 
 
 #====================#
 #   FeatureCouns     #
 #====================#
-cd $DIR/Quantification
+cd $DIR/Analysis/Quantification
 
-mkdir $DIR/Quantification/CountFiles
+mkdir $DIR/Analysis/Quantification/CountFiles
 
 
-BAMDIR=$DIR/ReadMapping/STAR_BAM_Merged
-OUTDIR=$DIR/Quantification/CountFiles
+BAMDIR=$DIR/Analysis/ReadMapping/STAR_BAM_Merged
+OUTDIR=$DIR/Analysis/Quantification/CountFiles
 
-sbatch $DIR/Quantification/feature.counts.sh $BAMDIR $OUTDIR
+sbatch $DIR/Analysis/Quantification/feature.counts.sh $BAMDIR $OUTDIR
 
