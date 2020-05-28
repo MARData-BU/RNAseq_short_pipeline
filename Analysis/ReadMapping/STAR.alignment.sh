@@ -27,3 +27,28 @@ STAR --runThreadN $SLURM_CPUS_PER_TASK\
  --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999\
  --outFilterMismatchNoverLmax 0.05 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000\
  --sjdbGTFfile $ANNOTGENE/gencode.v29.primary_assembly.annotation.gtf
+ 
+ 
+ 
+ ######################################################################################################
+#####################################METRICS########################################################
+
+module purge  ## Why? Clear out .bashrc /.bash_profile settings that might interfere
+module load picard/2.2.4-Java-1.8.0_92
+
+
+
+# With FIRST_READ_TRANSCRIPTION_STRAND we get almost all (97%) reads classified as "INCORRECT STRAND READS"
+# SECOND_READ_TRANSCRIPTION_STRAND (about 98% correct)
+# Can try still NONE (no results)
+
+java -jar $EBROOTPICARD/picard.jar CollectRnaSeqMetrics \
+	I=${OUTDIR}/${name}Aligned.sortedByCoord.out.bam \
+	REF_FLAT=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF/gencode.v29.flatFile \
+    	RIBOSOMAL_INTERVALS=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF/gencode.v29.ribosomal.interval_list \
+    	STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
+	O=${OUTDIR}/${name}.RNA_Metrics \
+	CHART=${OUTDIR}/${name}.RNA_Metrics.pdf
+	
+
+

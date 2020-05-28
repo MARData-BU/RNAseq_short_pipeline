@@ -29,15 +29,7 @@ ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u >> $DIR/Analysis/
 #============#
 #   STAR     #
 #============#
-mkdir $DIR/Analysis/ReadMapping/BAM_Files
-
-for i in $(cat $DIR/Analysis/Targets_Fastq | grep -v "Undetermined") 
-	do
-	echo $i
-	OUTDIR=$DIR/Analysis/ReadMapping/BAM_Files
-	sbatch $DIR/Analysis/ReadMapping/STAR.alignment.sh $i $OUTDIR
-	sleep 1
-done
+$DIR/Analysis/ReadMapping/STAR.loop.sh $PROJECT $batch
 
 
 #############################################################################################
@@ -58,6 +50,7 @@ grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Unique
 #=================#
 # Copy **Log.final.out to multiqc folder
 cp $DIR/Analysis/ReadMapping/BAM_Files/*Log.final.out $DIR/QC/multiQC/
+cp $DIR/Analysis/ReadMapping/BAM_Files/*RNA_Metrics $DIR/QC/multiQC/
 
 cd $DIR/QC
 module load Python/3.5.2-foss-2016b
