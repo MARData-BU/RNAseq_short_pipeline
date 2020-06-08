@@ -15,7 +15,7 @@ module load Bowtie2/2.3.5.1		# Required for Fastqscreen
 
 fastq=$1
 outdir=$2
-config=/bicoh/MARGenomics/Analysis_Files/Index_Genomes_Bowtie2/fastq_screen.conf
+config=/bicoh/MARGenomics/AnalysisFiles/Index_Genomes_Bowtie2/fastq_screen.conf
 #-------------------------------
 
 

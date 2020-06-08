@@ -34,3 +34,25 @@ LANE4=L004Aligned.sortedByCoord.out.bam
 samtools merge $OUTDIR/$name.bam ${line}_${LANE1} ${line}_${LANE2} ${line}_${LANE3} ${line}_${LANE4}
 
 
+#####################################################################################################
+##################################### RNA METRICS ########################################################
+ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF
+ 
+module purge  ## Why? Clear out .bashrc /.bash_profile settings that might interfere
+module load picard/2.2.4-Java-1.8.0_92
+
+
+# With FIRST_READ_TRANSCRIPTION_STRAND we get almost all (97%) reads classified as "INCORRECT STRAND READS"
+# SECOND_READ_TRANSCRIPTION_STRAND (about 98% correct)
+# Can try still NONE (no results)
+
+java -jar $EBROOTPICARD/picard.jar CollectRnaSeqMetrics \
+	I=$OUTDIR/$name.bam \
+	REF_FLAT=$ANNOTGENE/gencode.v29.flatFile \
+    	RIBOSOMAL_INTERVALS=$ANNOTGENE/gencode.v29.ribosomal.interval_list \
+    	STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
+	O=${OUTDIR}/${name}.RNA_Metrics \
+	CHART=${OUTDIR}/${name}.RNA_Metrics.pdf
+	
+
+

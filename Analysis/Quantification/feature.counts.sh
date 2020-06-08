@@ -19,7 +19,7 @@ module load subread/1.6.4
 BAMDIR=$1
 OUTDIR=$2
 
-ANNOTGENE=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF
+ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF
 
 featureCounts -T $SLURM_CPUS_PER_TASK -p -t exon --largestOverlap -g gene_name -a $ANNOTGENE/gencode.v29.primary_assembly.annotation.gtf -o $OUTDIR/CountsTable.txt \
 $BAMDIR/0101-1_S1.bam \

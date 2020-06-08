@@ -9,8 +9,8 @@
 module load STAR/2.6.0a
 
 
-ANNOTGENE=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF
-GNMIDX=/bicoh/MARGenomics/Analysis_Files/Index_Genomes_STAR/Idx_Gencode_hg38_readlength75
+ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF
+GNMIDX=/bicoh/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_hg38_readlength75
 
 lane=$1
 OUTDIR=$2
@@ -44,8 +44,8 @@ module load picard/2.2.4-Java-1.8.0_92
 
 java -jar $EBROOTPICARD/picard.jar CollectRnaSeqMetrics \
 	I=${OUTDIR}/${name}Aligned.sortedByCoord.out.bam \
-	REF_FLAT=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF/gencode.v29.flatFile \
-    	RIBOSOMAL_INTERVALS=/bicoh/MARGenomics/Analysis_Files/Annot_files_GTF/gencode.v29.ribosomal.interval_list \
+	REF_FLAT=$ANNOTGENE/gencode.v29.flatFile \
+    	RIBOSOMAL_INTERVALS=$ANNOTGENE/gencode.v29.ribosomal.interval_list \
     	STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
 	O=${OUTDIR}/${name}.RNA_Metrics \
 	CHART=${OUTDIR}/${name}.RNA_Metrics.pdf
