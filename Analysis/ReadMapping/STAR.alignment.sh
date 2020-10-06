@@ -9,7 +9,7 @@
 module load STAR/2.6.0a
 
 
-ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF
+ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF/Human
 GNMIDX=/bicoh/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_hg38_readlength75
 
 lane=$1
@@ -35,7 +35,7 @@ STAR --runThreadN $SLURM_CPUS_PER_TASK\
 
 module purge  ## Why? Clear out .bashrc /.bash_profile settings that might interfere
 module load picard/2.2.4-Java-1.8.0_92
-
+module load R
 
 
 # With FIRST_READ_TRANSCRIPTION_STRAND we get almost all (97%) reads classified as "INCORRECT STRAND READS"
