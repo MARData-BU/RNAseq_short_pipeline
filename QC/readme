@@ -17,13 +17,9 @@ FASTQDIR=${DIR}/rawData
 sbatch $DIR/QC/QC_loop.sh
 
 
-#=================#
-#   MultiQC       #
-#=================#
-mkdir $DIR/QC/multiQC
-
-cd $DIR/QC
-module load Python/3.5.2-foss-2016b
-
-multiqc . -f -o $DIR/QC/multiQC
+#===========================#
+#   Summarize QC metrics    #
+#===========================#
+# Runs multiQC and writes excel and figure
+sbatch $DIR/QC/QC_metrics.sh
 
