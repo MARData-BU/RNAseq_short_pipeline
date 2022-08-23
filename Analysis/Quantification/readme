@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Julia 8.2.2020
+# Júlia 05.08.2022
 # Quantification with Featurecounts of project:
 
-PROJECT=20190826_AGimenez_FIS_UFred
+
+PROJECT="project_name"
 
 # Prepare variables
 #------------------
@@ -15,19 +16,11 @@ DIR=${path}/${PROJECT}
 #------------------
 mkdir $DIR/Analysis/Quantification/logs
 
-
 #====================#
-#   FeatureCouns     #
+#   FeatureCouns MM  #
 #====================#
-cd $DIR/Analysis/Quantification
-
-mkdir $DIR/Analysis/Quantification/CountFiles
-
-
-BAMDIR=$DIR/Analysis/ReadMapping/STAR_BAM_Merged
-OUTDIR=$DIR/Analysis/Quantification/CountFiles
-
-sbatch $DIR/Analysis/Quantification/feature.counts.sh $BAMDIR $OUTDIR
+BATCH="Batch_01"
+sbatch $DIR/Analysis/Quantification/feature.counts.sh $PROJECT $BATCH
 
 #=================#
 #   MultiQC       #
