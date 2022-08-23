@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Julia 8.2.2020
-# BAM alignement of project:
+# Júlia 5.08.2022 
 
-PROJECT=20190826_AGimenez_FIS_UFred
+#################################### BAM alignement of project:  #################################################
+
+PROJECT="project_name"
 
 # Prepare variables
 #------------------
@@ -13,72 +14,14 @@ DIR=${path}/${PROJECT}
 
 # Prepare folders
 #------------------
+cd $DIR/Analysis/ReadMapping
 mkdir $DIR/Analysis/ReadMapping/logs
 
 
-#############################################################################################
-#################################TARGET PREPARATION##########################################
-cd $DIR/rawData/results-run1
-ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u > $DIR/Analysis/Targets_Fastq
+suffix=_R1.fastq.gz
+BATCH="Batch_01"
+length_files=$(ls -1 $DIR/rawData/${BATCH}/*$suffix| wc -l)
+sbatch --array=1-$length_files $DIR/Analysis/ReadMapping/star.sh $PROJECT $BATCH $suffix
 
-cd $DIR/rawData/results-run2
-ls -d "$PWD"/*fastq.gz | sed 's/................$//' | sort -u >> $DIR/Analysis/Targets_Fastq
-#############################################################################################
-#############################################################################################
-
-#============#
-#   STAR     #
-#============#
-$DIR/Analysis/ReadMapping/STAR.loop.sh $PROJECT $batch
-
-
-#############################################################################################
-#Inspect alignment results
-
-OUTDIR=$DIR/Analysis/ReadMapping/BAM_Files
-
-for i in $OUTDIR/*.final.out; do basename $i >> $OUTDIR/TotalCounts_Alignment; \
-grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Uniquely mapped reads" "$i"\
- >> $OUTDIR/TotalCounts_Alignment; grep "Average mapped length" "$i" >> $OUTDIR/TotalCounts_Alignment;\
- grep "reads mapped to too many loci" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "too many mismatches" "$i"\
- >> $OUTDIR/TotalCounts_Alignment; grep "too short" "$i" >> $OUTDIR/TotalCounts_Alignment;\
- grep "other" "$i" >> $OUTDIR/TotalCounts_Alignment; done
-
-
-#=================#
-#   MultiQC       #
-#=================#
-# Copy **Log.final.out to multiqc folder
-cp $DIR/Analysis/ReadMapping/BAM_Files/*Log.final.out $DIR/QC/multiQC/
-cp $DIR/Analysis/ReadMapping/BAM_Files/*RNA_Metrics $DIR/QC/multiQC/
-
-cd $DIR/QC
-module load Python/3.5.2-foss-2016b
-
-multiqc . -o $DIR/QC/multiQC -f
-
-
-
-#############################################################################################
-#################################TARGET MERGE BAM ##########################################
-##################################################################################################
-
-# Targets file removing lane information (one row per sample)
-cd $DIR/Analysis/ReadMapping/BAM_Files
-ls -d "$PWD"/*out.bam | sed 's/_L00.*Aligned.sortedByCoord.out.bam$//'  | sort -u > $DIR/Analysis/ReadMapping/Targets_BamtoMerge_star
-
-#=================#
-#   Merge BAMS    #
-#=================#
-
-cd $DIR/Analysis/ReadMapping
-mkdir $DIR/Analysis/ReadMapping/STAR_BAM_Merged
-
-for i in $(cat $DIR/Analysis/ReadMapping/Targets_BamtoMerge_star) 
-	do
-	echo $i
-	OUTDIR=$DIR/Analysis/ReadMapping/STAR_BAM_Merged
-	sbatch $DIR/Analysis/ReadMapping/Merge_BAM_Lanes.sh $i $OUTDIR
-	sleep 1
-done
+sbatch $DIR/Analysis/ReadMapping/ReadMapping_metrics.sh $PROJECT $BATCH
 
