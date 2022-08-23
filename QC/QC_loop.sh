@@ -3,19 +3,20 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu 6Gb     # Memory in MB
 #SBATCH -J QC_loop           # job name
-#SBATCH -o QC_loop.%j.out    # File to which standard out will be written
-#SBATCH -e QC_loop.%j.err    # File to which standard err will be written
+#SBATCH -o logs/QC_loop.%A_%a.log    # File to which standard out will be written
+#SBATCH -e logs/QC_loop.%A_%a.log    # File to which standard err will be written
 
 # QC Analysis of RNASeq samples of project: 
 
-PROJECT=20190826_AGimenez_FIS_UFred
-
+PROJECT=$1
+BATCH=$2
 # Prepare variables
 #------------------
 
 path=/bicoh/MARGenomics
 DIR=${path}/${PROJECT}
 FASTQDIR=${DIR}/rawData
+suffix=_R1.fastq.gz
 
 # Prepare folders
 #------------------
@@ -24,28 +25,34 @@ mkdir $DIR/QC/logs
 #============#
 #   FASTQC   #
 #============#
-mkdir $DIR/QC/FastQC
-
-for i in $(ls $FASTQDIR/*fastq.gz) 
-	do
-	echo $i
-	outdir=$DIR/QC/FastQC
-	sbatch $DIR/QC/fastqc.sh $i $outdir
-	sleep 1
-done
+#get the number of files with fastq.gz extention:
+length_files=$(ls -lR $FASTQDIR/${BATCH}/*.fastq.gz | wc -l)
+#run the job (QC_loop) with array mode:
+sbatch --array=1-$length_files $DIR/QC/fastqc.sh $PROJECT $BATCH
 
 
 #=================#
 #   FASTQSCREEN   #
 #=================#
-mkdir $DIR/QC/FastqScreen
+#get the number of files with fastq.gz extention:
+length_files=$(ls -lR $FASTQDIR/${BATCH}/*.fastq.gz | wc -l)
+#run the job (QC_loop) with array mode:
+sbatch --array=1-$length_files $DIR/QC/fastq_screen.sh $PROJECT $BATCH
 
-for i in $(ls $FASTQDIR/*fastq.gz) 
-	do
-	echo $i
-	outdir=$DIR/QC/FastqScreen
-	sbatch $DIR/QC/fastq_screen.sh $i $outdir
-	sleep 1
-done
+
+#=================#
+#      FASTP      #
+#=================#
+
+#mkdir $DIR_out/QC/${RUN}/fastp
+#OUTDIR=$DIR_out/QC/${RUN}/fastp
+
+#for i in $(ls $FASTQDIR/*${suffix} | sed "s/$suffix//")
+#	do
+#	echo $i
+#	sbatch $DIR/QC/fastp.sh $i $OUTDIR $suffix
+#	sleep 1
+#done
+
 
 
