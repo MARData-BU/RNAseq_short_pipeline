@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# QC Analysis of RNASeq samples of project: 
+# QC Analysis of smallRNA-Seq samples of project: 
 
-PROJECT=20190826_AGimenez_FIS_UFred
+PROJECT="project_name"
 
 # Prepare variables
 #------------------
@@ -11,15 +11,13 @@ path=/bicoh/MARGenomics
 DIR=${path}/${PROJECT}
 FASTQDIR=${DIR}/rawData
 
-#===========================#
-#   FASTQC and  FASTQSCREEN #
-#===========================#
-sbatch $DIR/QC/QC_loop.sh
+cd $DIR/QC
+mkdir $DIR/QC/logs
+#==========
+# rawData
+#==========
 
-
-#===========================#
-#   Summarize QC metrics    #
-#===========================#
-# Runs multiQC and writes excel and figure
-sbatch $DIR/QC/QC_metrics.sh
+BATCH="Batch_01"
+sbatch QC_loop.sh $PROJECT $BATCH
+sbatch QC_metrics.sh $PROJECT $BATCH
 
