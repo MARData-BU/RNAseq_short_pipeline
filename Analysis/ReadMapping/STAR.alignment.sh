@@ -1,42 +1,70 @@
 #!/bin/bash
-#SBATCH -p normal            # Partition to submit to
-#SBATCH --cpus-per-task=4
-#SBATCH --mem-per-cpu 8Gb           # Memory in MB
-#SBATCH -J STAR           # job name
-#SBATCH -o logs/STAR.%j.out    # File to which standard out will be written
-#SBATCH -e logs/STAR.%j.err    # File to which standard err will be written
+#SBATCH -p normal,long,bigmem   # Partition to submit to
+#SBATCH --cpus-per-task=10	#change to 5 if no rush or cluster is full
+#SBATCH --mem-per-cpu 9Gb      # Memory in MB
+#SBATCH -J STAR                # job name
+#SBATCH -o logs/STAR.%A_%a.out    		# Sdt out file name: %j SLURM_JOB_ID; %A SLURM_ARRAY_JOB_ID, %a SLURM_ARRAY_TASK_ID
+#SBATCH -e logs/STAR.%A_%a.err    		# Sdt err file name: %j SLURM_JOB_ID; %A SLURM_ARRAY_JOB_ID, %a SLURM_ARRAY_TASK_ID
 
-module load STAR/2.6.0a
+module load STAR/2.7.1a-foss-2016b
+
+#------------------------
+# Prapare folders
+
+PROJECT=$1
+BATCH=$2
+suffix=$3
+
+path=/bicoh/MARGenomics
+DIR=${path}/${PROJECT}
+FASTQDIR=$DIR/rawData/${BATCH}
 
 
-ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF/Human
-GNMIDX=/bicoh/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_hg38_readlength75
+mkdir -p $DIR/Analysis/ReadMapping/BAM_Files/${BATCH}
+OUTDIR=$DIR/Analysis/ReadMapping/BAM_Files/${BATCH}
 
-lane=$1
-OUTDIR=$2
-name=`basename $lane`
+#--------------------
+# Prapare input files
 
-R1=_R1_001.fastq.gz
-R2=_R2_001.fastq.gz
+FASTQFILES=($(ls -1 $FASTQDIR/*${suffix} | sed "s/$suffix//")) 
+i=$(($SLURM_ARRAY_TASK_ID - 1)) ## bash arrays are 0-based
+INFILE=${FASTQFILES[i]}
+
+name=`basename $INFILE`
+
+R1=$suffix
+R2=`echo $suffix | sed "s/R1/R2/"`
+
+#--------------------
+# Paths to index files
+ANNOTGENE=/projects_rg/MARGenomics/AnalysisFiles/Annot_files_GTF/Mouse
+GNMIDX=/projects_rg/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_v28_mm10_readlength75
+
 ######################################################################################################
-#####################################ALIGNMENT########################################################
+##################################### ALIGNMENT ########################################################
 
 STAR --runThreadN $SLURM_CPUS_PER_TASK\
- --genomeDir $GNMIDX --readFilesIn $lane$R1 $lane$R2 --readFilesCommand zcat --outFileNamePrefix\
+ --genomeDir $GNMIDX --readFilesIn $INFILE$R1 $INFILE$R2 --readFilesCommand zcat --outFileNamePrefix\
  $OUTDIR/$name --outSAMattributes All --outSAMtype BAM SortedByCoordinate --outFilterType BySJout\
  --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999\
  --outFilterMismatchNoverLmax 0.05 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000\
- --sjdbGTFfile $ANNOTGENE/gencode.v29.primary_assembly.annotation.gtf
- 
- 
- 
- ######################################################################################################
-#####################################METRICS########################################################
+ --sjdbGTFfile $ANNOTGENE/gencode.vM28.primary_assembly.annotation.gtf
 
+ ######################################################################################################
+##################################### Create index (.bai)###############################################
+
+module purge
+module load SAMtools/1.8-foss-2016b
+
+
+samtools index ${OUTDIR}/${name}Aligned.sortedByCoord.out.bam ${OUTDIR}/${name}Aligned.sortedByCoord.out.bai
+ 
+
+######################################################################################################
+##################################### RNA METRICS ########################################################
+ 
 module purge  ## Why? Clear out .bashrc /.bash_profile settings that might interfere
 module load picard/2.2.4-Java-1.8.0_92
-module load R
-
 
 # With FIRST_READ_TRANSCRIPTION_STRAND we get almost all (97%) reads classified as "INCORRECT STRAND READS"
 # SECOND_READ_TRANSCRIPTION_STRAND (about 98% correct)
@@ -44,11 +72,8 @@ module load R
 
 java -jar $EBROOTPICARD/picard.jar CollectRnaSeqMetrics \
 	I=${OUTDIR}/${name}Aligned.sortedByCoord.out.bam \
-	REF_FLAT=$ANNOTGENE/gencode.v29.flatFile \
-    	RIBOSOMAL_INTERVALS=$ANNOTGENE/gencode.v29.ribosomal.interval_list \
+	REF_FLAT=$ANNOTGENE/gencode.vM28.flatFile \
+    	RIBOSOMAL_INTERVALS=$ANNOTGENE/gencode.vM28.ribosomal.interval_list \
     	STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
-	O=${OUTDIR}/${name}.RNA_Metrics \
-	CHART=${OUTDIR}/${name}.RNA_Metrics.pdf
-	
-
+	O=${OUTDIR}/${name}.RNA_Metrics 
 
