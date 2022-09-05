@@ -21,7 +21,7 @@ mkdir $DIR/Analysis/ReadMapping/logs
 suffix=_R1.fastq.gz
 BATCH="Batch_01"
 length_files=$(ls -1 $DIR/rawData/${BATCH}/*$suffix| wc -l)
-sbatch --array=1-$length_files $DIR/Analysis/ReadMapping/star.sh $PROJECT $BATCH $suffix
+sbatch --array=1-$length_files $DIR/Analysis/ReadMapping/STAR.alignment.sh .sh $PROJECT $BATCH $suffix
 
 sbatch $DIR/Analysis/ReadMapping/ReadMapping_metrics.sh $PROJECT $BATCH
 
