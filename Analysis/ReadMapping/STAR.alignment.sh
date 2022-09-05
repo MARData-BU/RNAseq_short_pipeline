@@ -37,8 +37,8 @@ R2=`echo $suffix | sed "s/R1/R2/"`
 
 #--------------------
 # Paths to index files
-ANNOTGENE=/projects_rg/MARGenomics/AnalysisFiles/Annot_files_GTF/Mouse
-GNMIDX=/projects_rg/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_v28_mm10_readlength75
+ANNOTGENE=/bicoh/MARGenomics/AnalysisFiles/Annot_files_GTF/Mouse # Mouse ---> For human use: ~/Human
+GNMIDX=/bicoh/MARGenomics/AnalysisFiles/Index_Genomes_STAR/Idx_Gencode_v28_mm10_readlength75 # Mouse ---> For human use: ~/Idx_Gencode_v36_hg38_readlength75
 
 ######################################################################################################
 ##################################### ALIGNMENT ########################################################
@@ -48,7 +48,7 @@ STAR --runThreadN $SLURM_CPUS_PER_TASK\
  $OUTDIR/$name --outSAMattributes All --outSAMtype BAM SortedByCoordinate --outFilterType BySJout\
  --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999\
  --outFilterMismatchNoverLmax 0.05 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000\
- --sjdbGTFfile $ANNOTGENE/gencode.vM28.primary_assembly.annotation.gtf
+ --sjdbGTFfile $ANNOTGENE/gencode.vM28.primary_assembly.annotation.gtf # Mouse ---> For human use: gencode.v36.primary_assembly.annotation.gtf
 
  ######################################################################################################
 ##################################### Create index (.bai)###############################################
@@ -77,3 +77,4 @@ java -jar $EBROOTPICARD/picard.jar CollectRnaSeqMetrics \
     	STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
 	O=${OUTDIR}/${name}.RNA_Metrics 
 
+# Mouse ---> For human use v36 instead of vM28
