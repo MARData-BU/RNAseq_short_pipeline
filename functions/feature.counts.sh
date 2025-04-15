@@ -8,7 +8,7 @@
 
 
 module purge
-module load subread/2.0.34
+module load Subread/2.0.3
 
 #------------------------
 # Prapare folders
