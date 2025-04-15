@@ -70,8 +70,8 @@ sbatch $DIR/functions/feature.counts.sh $DIR
 #=================#
 #   MultiQC       #
 #=================#
-
-module load Python/3.5.2-foss-2016b
+# Do this step in local, not in shiva
+module load Python/3.8.6-GCCcore-10.2.0
 
 multiqc . -o $DIR/01_QC -f
 
